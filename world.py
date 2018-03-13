@@ -6,6 +6,7 @@ class World(list):
         super(World, self).__init__()
         self.rows = x
         self.columns = y
+        self.cells = []
         Values = [True, False]
         for _ in range(y):
             line = []
@@ -13,11 +14,11 @@ class World(list):
                 status = Values[randint(0,1)]
                 cell = Cell(status)
                 line.append(cell)
-            self.append(line)
+            self.cells.append(line)
 
     def __str__(self):
         s = ''
-        for row in self:
+        for row in self.cells:
             s += '| '
             for cell in row:
                 s += str(cell)
