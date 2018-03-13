@@ -10,7 +10,7 @@ class CellTestCase(unittest.TestCase):
         cell = Cell(True)
         self.assertEqual('0', str(cell))
         cell.living = False
-        self.assertEqual('x', str(cell))
+        self.assertEqual('-', str(cell))
 
 if __name__ == '__main__':
     unittest.main()
