@@ -1,4 +1,6 @@
 from world import World
+import time
+
 
 class Simulation(object):
     def __init__(self, name=False):
@@ -14,7 +16,15 @@ class Simulation(object):
 
 def test():
     sim = Simulation()
-    sim.add_world(5, 10)
-    print(str(sim.world))
+    sim.add_world(10, 10)
+    sim.world.populate_cells(40)
+    sim.world.count_neighbors()
+    while sim.world.count_living() > 0:
+        print(sim.world)
+        sim.world.next_cell_status()
+        sim.world.create_next_world()
+        time.sleep(0.2)
+    print(sim.world)
+
 
 test()

@@ -29,7 +29,7 @@ class WorldTestCase(unittest.TestCase):
         alive.live()
         dead = Cell(0, 1)
         world.cells = [[alive, dead], [dead, alive]]
-        self.assertEqual(str(world), f'| 0 | - | \n| - | 0 | \n')
+        self.assertEqual(str(world), u'\u25A0 \u25A1 \n\u25A1 \u25A0 \n')
 
     def test_populate(self):
         rows = 10
@@ -42,13 +42,53 @@ class WorldTestCase(unittest.TestCase):
         w.populate_cells(100)
         self.assertEqual(w.count_living(), 100)
 
-
     def test_count_living(self):
         w = World(10, 10)
         living = 30
         w.populate_cells(living)
         self.assertEqual(living, w.count_living())
 
+    def test_neighbors(self):
+        rows = 3
+        columns = 3
+        w = World(rows, columns)
+        w.populate_cells(100)
+        w.count_neighbors()
+        cell = w.cells[0][0]
+        self.assertEqual(len(cell.neighbors), 3)
+        cell2 = w.cells[0][1]
+        self.assertEqual(len(cell2.neighbors), 5)
+        cell3 = w.cells[1][1]
+        self.assertEqual(len(cell3.neighbors), 8)
+
+    def test_next_life(self):
+        rows = 3
+        columns = 3
+        w = World(rows, columns)
+        w.populate_cells(100)
+        w.count_neighbors()
+        w.next_cell_status()
+        cell = w.cells[0][0]
+        self.assertEqual(cell.nextLife, True)
+        cell2 = w.cells[1][1]
+        self.assertEqual(cell2.nextLife, False)
+
+    def test_next_worlds(self):
+        rows = 3
+        columns = 3
+        w = World(rows, columns)
+        w.populate_cells(100)
+        w.count_neighbors()
+        w.next_cell_status()
+        w.create_next_world()
+        self.assertEqual(str(w), u"\u25A0 \u25A1 \u25A0 \n"
+                                 u"\u25A1 \u25A1 \u25A1 \n"
+                                 u"\u25A0 \u25A1 \u25A0 \n")
+        w.next_cell_status()
+        w.create_next_world()
+        self.assertEqual(str(w), u"\u25A1 \u25A1 \u25A1 \n"
+                                 u"\u25A1 \u25A1 \u25A1 \n"
+                                 u"\u25A1 \u25A1 \u25A1 \n")
 
 
 if __name__ == '__main__':
