@@ -4,6 +4,8 @@ class Cell:
         self.row = row
         self. column = column
         self.location = None
+        self.neighbors = 0
+        self.nextLife = False
 
     def live(self):
         self.alive = True
@@ -13,5 +15,12 @@ class Cell:
         self.alive = False
         return self
 
+    def get_living_neighbors(self):
+        living = 0
+        for cell in self.neighbors:
+            if cell.alive == True:
+                living += 1
+        return living
+
     def __repr__(self):
-        return '0' if self.alive else '-'
+        return u"\u25A0" if self.alive else u"\u25A1"

@@ -12,10 +12,9 @@ class World(list):
     def __str__(self):
         s = ''
         for row in self.cells:
-            s += '| '
             for cell in row:
                 s += str(cell)
-                s += ' | '
+                s += ' '
             s += '\n'
         return s
 
@@ -28,33 +27,6 @@ class World(list):
                 line.append(cell)
             cells.append(line)
         return cells
-
-    def create_location(self):
-        cellLocations = [(row, column) for row in range(self.rows) for column in range(self.columns)]
-        availableCells = cellLocations
-        counter = 0
-        for location in availableCells:
-            cell = self.cells[location[0]][location[1]]
-            counter += 1
-            if location == (0, 0):
-                cell.location = 'topLeftCorner'
-            elif location == (0, (self.columns - 1)):
-                cell.location = 'topRightCorner'
-            elif location == ((self.rows - 1), 0):
-                cell.location = 'bottomLeftCorner'
-            elif location == ((self.rows - 1), (self.columns - 1)):
-                cell.location = 'bottomRightCorner'
-            elif location[0] == 0:
-                cell.location = 'top'
-            elif location[0] == (self.rows - 1):
-                cell.location = 'bottom'
-            elif location[1] == 0:
-                cell.location = 'left'
-            elif location[1] == (self.columns - 1):
-                cell.location = 'right'
-            else:
-                cell.location = 'middle'
-            print(cell.location)
 
     def populate_cells(self, percentAlive):
         cellLocations = [(row, column) for row in range(self.rows) for column in range(self.columns)]
@@ -78,109 +50,55 @@ class World(list):
         return living
 
     def count_neighbors(self):
-        newWorld = self
         for row in self.cells:
             for cell in row:
-                neighbors = 0
-                if cell.location == 'topLeftCorner':
-                    if self.cells[cell.row][cell.column + 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row + 1][cell.column + 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row + 1][cell.column].alive:
-                        neighbors += 1
-                    print(neighbors)
-                elif cell.location == 'topRightCorner':
-                    if self.cells[cell.row + 1][cell.column - 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row][cell.column - 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row + 1][cell.column].alive:
-                        neighbors += 1
-                elif cell.location == 'bottomLeftCorner':
-                    if self.cells[cell.row][cell.column + 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row - 1][cell.column + 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row - 1][cell.column].alive:
-                        neighbors += 1
-                elif cell.location == 'bottomRightCorner':
-                    if self.cells[cell.row][cell.column - 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row - 1][cell.column - 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row - 1][cell.column].alive:
-                        neighbors += 1
-                elif cell.location == 'top':
-                    if self.cells[cell.row][cell.column + 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row][cell.column - 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row + 1][cell.column + 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row + 1][cell.column - 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row + 1][cell.column].alive:
-                        neighbors += 1
-                elif cell.location == 'bottom':
-                    if self.cells[cell.row][cell.column + 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row][cell.column - 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row - 1][cell.column + 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row - 1][cell.column - 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row - 1][cell.column].alive:
-                        neighbors += 1
-                elif cell.location == 'left':
-                    if self.cells[cell.row][cell.column + 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row + 1][cell.column].alive:
-                        neighbors += 1
-                    if self.cells[cell.row + 1][cell.column + 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row - 1][cell.column + 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row - 1][cell.column].alive:
-                        neighbors += 1
-                elif cell.location == 'right':
-                    if self.cells[cell.row][cell.column - 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row + 1][cell.column].alive:
-                        neighbors += 1
-                    if self.cells[cell.row + 1][cell.column - 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row - 1][cell.column - 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row - 1][cell.column].alive:
-                        neighbors += 1
-                elif cell.location == 'middle':
-                    if self.cells[cell.row - 1][cell.column - 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row - 1][cell.column].alive:
-                        neighbors += 1
-                    if self.cells[cell.row - 1][cell.column + 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row][cell.column + 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row][cell.column - 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row + 1][cell.column].alive:
-                        neighbors += 1
-                    if self.cells[cell.row + 1][cell.column + 1].alive:
-                        neighbors += 1
-                    if self.cells[cell.row + 1][cell.column - 1].alive:
-                        neighbors += 1
-                if neighbors == 2 or neighbors == 3:
-                    newWorld.cells[cell.row][cell.column].live()
-                else:
-                    newWorld.cells[cell.row][cell.column].die()
-        return newWorld
+                row = cell.row
+                column = cell.column
+                neighborList = []
+                cellLocations = {'topLeft': [row - 1, column - 1],
+                                 'topMiddle': [row - 1, column],
+                                 'topRight': [row -1, column + 1],
+                                 'right': [row, column + 1],
+                                 'bottomRight': [row + 1, column + 1],
+                                 'bottomMiddle': [row + 1, column],
+                                 'bottomLeft': [row + 1, column - 1],
+                                 'left': [row, column - 1]}
+                for location, coordinates in cellLocations.items():
+                    valid = self.coordinate_checker(coordinates)
+                    if valid == True:
+                        x = coordinates[0]
+                        y = coordinates[1]
+                        neighborList.append(self.cells[x][y])
+                cell.neighbors = neighborList
 
-w = World(10, 10)
-w.populate_cells(45)
-w.create_location()
-print(w)
-newWorld = w.count_neighbors()
-print(newWorld)
+    def coordinate_checker(self, coordinates):
+        valid = True
+        x = coordinates[0]
+        y = coordinates[1]
+        if x < 0 or x > self.rows - 1:
+            valid = False
+        if y < 0 or y > self.columns - 1:
+            valid = False
+        return valid
+
+    def next_cell_status(self):
+        for row in self.cells:
+            for cell in row:
+                if cell.get_living_neighbors() <= 1 and cell.alive == True:
+                    cell.nextLife = False
+                elif cell.get_living_neighbors() in [2,3] and cell.alive == True:
+                    cell.nextLife = True
+                elif cell.get_living_neighbors() in [4,5,6,7,8] and cell.alive == True:
+                    cell.nextLife = False
+                elif cell.get_living_neighbors() == 3 and cell.alive == False:
+                    cell.nextLife = True
+                else:
+                    cell.nextLife = False
+
+    def create_next_world(self):
+        for row in self.cells:
+            for cell in row:
+                if cell.nextLife:
+                    cell.live()
+                else:
+                    cell.die()
