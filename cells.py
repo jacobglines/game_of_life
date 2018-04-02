@@ -4,8 +4,10 @@ class Cell:
         self.row = row
         self. column = column
         self.location = None
-        self.neighbors = 0
+        self.neighbors = []
         self.nextLife = False
+        self.livingChar = u"\u2B1B"
+        self.deadChar = u"\u2B1C"
 
     def live(self):
         self.alive = True
@@ -23,4 +25,4 @@ class Cell:
         return living
 
     def __repr__(self):
-        return u"\u25A0" if self.alive else u"\u25A1"
+        return self.livingChar if self.alive else self.deadChar
