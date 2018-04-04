@@ -1,7 +1,7 @@
 from world import World
 import time
 import os
-from toolbox import get_integer, get_integer_between
+from toolbox import get_integer, get_integer_between, is_number, get_yes_no
 
 
 class Simulation(object):
@@ -9,7 +9,7 @@ class Simulation(object):
         self.world = None
         self.name = name
         self.size = []
-        self.speed = 0.2
+        self.speed = 0.25
 
     def add_world(self, x, y):
         self.world = World(x, y)
@@ -30,6 +30,7 @@ class Simulation(object):
 ╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝██║         ███████╗██║██║     ███████╗
  ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝ ╚═╝         ╚══════╝╚═╝╚═╝     ╚══════╝
 """)
+        time.sleep(2)
 
     def menu(self):
         menu = """[C]reate | [S]im | S[K]ip | [P]opulate | C[R]eations | [M]ore | [H]elp | [Q]uit"""
@@ -92,7 +93,11 @@ class Simulation(object):
                 self.world.next_cell_status()
                 self.world.create_next_world()
                 counter += 1
-                print(self.world)
+                #
+                # Remove the time sleep when running speed test
+                #
+                # time.sleep(self.speed)
+                # print(self.world)
             if self.world.count_living() == 0:
                 print('Your cells all died at generation ', self.world.generation)
 
@@ -227,6 +232,7 @@ You can import interesting premade shapes, and if you so choose, you can save an
                  'p': 'S[P]eed',
                  'g': '[G]eometry',
                  'c': '[C]haracters',
+                 'r': '[R]ules',
                  'b': '[B]ack'}
         self.more_menu()
         menuChoices = plays.keys()
@@ -260,6 +266,17 @@ You can import interesting premade shapes, and if you so choose, you can save an
             self.set_speed(parameter)
         elif choice == 'c':
             self.change_character()
+        elif choice == 'r':
+            self.change_rules()
+
+    def change_rules(self):
+        choice = get_yes_no('Do you want to see the current rules? ')
+        if choice == 'yes':
+            pass
+            #
+            # TODO create a rules help menu .txt and print it
+            #
+
 
     def change_character(self):
         alive = input('What do you want the living character to be? ')
@@ -273,7 +290,11 @@ You can import interesting premade shapes, and if you so choose, you can save an
         if parameter != None:
             self.speed = int(parameter)
         else:
-            self.speed = int(get_integer_between('How fast do you want to simulate? (lower is faster. Default is 0.25) ', 0.001, 5, 6))
+            number = False
+            while not number:
+                speed = input('How fast do you want to simulate? (lower is faster. Default is 0.25) ')
+                number = is_number(speed)
+            self.speed = float(speed)
 
     def get_percent(self):
         cellLocations = [(row, column) for row in range(self.world.rows) for column in range(self.world.columns)]
@@ -288,7 +309,7 @@ You can import interesting premade shapes, and if you so choose, you can save an
 def main():
     sim = Simulation()
     sim.intro()
-    sim.add_world(15, 40)
+    sim.add_world(30, 70)
     sim.world.populate_cells(35)
     sim.world.count_neighbors()
     play = True
@@ -324,30 +345,19 @@ def main():
 
 def speed_test():
     sim = Simulation()
-    sim.add_world(34, 72)
+    sim.create_world('200 900')
+    print('hello')
     sim.world.count_neighbors_donut()
-    sim.sim(200)
-    sim.create_world('34 72')
-    sim.world.count_neighbors_donut()
+    print('hello')
     sim.populate_world(50)
-    sim.sim(200)
-    sim.create_world('34 72')
-    sim.world.count_neighbors_donut()
-    sim.populate_world(50)
-    sim.sim(200)
-    sim.create_world('34 72')
-    sim.world.count_neighbors_donut()
-    sim.populate_world(50)
-    sim.sim(200)
-    sim.create_world('34 72')
-    sim.world.count_neighbors_donut()
-    sim.populate_world(50)
-    sim.sim(200)
+    print(sim.world)
 
-main()
-#speed_test()
+#main()
+speed_test()
 #
 # TODO get help on 1.7 (confirmation)
 #
 # TODO how do I convert a string of a unicode character to actual unicode (in change_character())
+#
+# TODO update help page(s)
 #

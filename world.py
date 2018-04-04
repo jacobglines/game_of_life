@@ -13,11 +13,12 @@ class World(list):
         # Geometry can either be a dish or a donut
         #
         self.geometry = geometry
+        self.aliveToAlive = [2, 3]
+        self.deadToAlive = [3]
         self.name = 'N/A'
 
     def __str__(self):
-        s = ''
-        s += f'Living cells: {self.count_living()}\n'
+        s = f'Living cells: {self.count_living()}\n'
         for row in self.cells:
             for cell in row:
                 s += str(cell)
@@ -110,10 +111,10 @@ class World(list):
                 neighbors = cell.get_living_neighbors()
                 cell.nextLife = False
                 if cell.alive:
-                    if neighbors in [2, 3]:
+                    if neighbors in self.aliveToAlive:
                         cell.nextLife = True
                 else:
-                    if neighbors in [3]:
+                    if neighbors in self.deadToAlive:
                         cell.nextLife = True
 
     def create_next_world(self):
