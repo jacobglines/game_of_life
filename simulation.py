@@ -293,7 +293,7 @@ You can import interesting premade shapes, and if you so choose, you can save an
         elif choice == 'p':
             self.set_speed(parameter)
         elif choice == 'd':
-            self.change_character()
+            self.change_display()
         elif choice == 'r':
             self.change_rules()
 
@@ -323,11 +323,16 @@ You can import interesting premade shapes, and if you so choose, you can save an
                 cell.deadChar = dead
 
     def change_age(self):
-        choice = get_yes_no("Would you like to switch the display? (aged or normal) ")
+        choice = get_yes_no("Would you like to switch the display?")
         if choice == 'yes':
-    #
-    # TODO left off here
-    #
+            if self.world.cells[0][0].display == 'normal':
+                for row in self.world.cells:
+                    for cell in row:
+                        cell.display = 'aged'
+            elif self.world.cells[0][0].display == 'aged':
+                for row in self.world.cells:
+                    for cell in row:
+                        cell.display = 'normal'
 
     def change_rules(self):
         choice = get_yes_no('Do you want to see the current rules? ')
