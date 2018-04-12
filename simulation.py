@@ -37,7 +37,7 @@ class Simulation(object):
         print(menu)
 
     def more_menu(self):
-        menu = '[S]ave | [L]oad | S[P]eed | [G]eometry | [C]haracters | [B]ack'
+        menu = '[S]ave | [L]oad | S[P]eed | [G]eometry | [D]isplay | [R]ules | [B]ack'
         print(menu)
 
     def play(self):
@@ -67,8 +67,8 @@ class Simulation(object):
             rows = sizes[0]
             columns = sizes[1]
         else:
-            rows = get_integer_between("How many rows do you want? ", 1, 100, 0)
-            columns = get_integer_between("How many columns do you want? ", 1, 100, 0)
+            rows = get_integer_between("How many rows do you want? ", 1, 250, 0)
+            columns = get_integer_between("How many columns do you want? ", 1, 1001, 0)
         self.clear_world()
         self.add_world(int(rows), int(columns))
         self.world.create_cells()
@@ -84,11 +84,12 @@ class Simulation(object):
         elif self.world.count_living() == 0:
             print('All your cells are dead, please populate your world\n')
         else:
-            if parameter != None:
+            if parameter!= None:
                 generations = parameter
             else:
                 generations = get_integer("How many generations do you want to move forward? ")
             counter = 0
+            self.world.state = 'alive'
             while int(generations) > counter and self.world.count_living() > 0:
                 self.world.next_cell_status()
                 self.world.create_next_world()
@@ -96,10 +97,37 @@ class Simulation(object):
                 #
                 # Remove the time sleep when running speed test
                 #
-                # time.sleep(self.speed)
-                # print(self.world)
+                time.sleep(self.speed)
+                print(self.world)
             if self.world.count_living() == 0:
                 print('Your cells all died at generation ', self.world.generation)
+            elif self.world.state == 'stale':
+                print('Your world will not change in its current state\n')
+            elif self.world.state == 'blinker':
+                print('All you have left is blinkers')
+
+    def sim_forward(self, parameter):
+        if parameter != None:
+            generations = parameter
+        else:
+            generations = get_integer("How many generations do you want to move forward? ")
+        counter = 0
+        self.world.state = 'alive'
+        while int(generations) > counter and self.world.count_living() > 0:
+            self.world.next_cell_status()
+            self.world.create_next_world()
+            counter += 1
+            #
+            # Remove the time sleep when running speed test
+            #
+            time.sleep(self.speed)
+            print(self.world)
+        if self.world.count_living() == 0:
+            print('Your cells all died at generation ', self.world.generation)
+        elif self.world.state == 'stale':
+            print('Your world will not change in its current state\n')
+        elif self.world.state == 'blinker':
+            print('All you have left is blinkers')
 
     def skip(self, parameter):
         if self.world == None:
@@ -231,7 +259,7 @@ You can import interesting premade shapes, and if you so choose, you can save an
                  'l': '[L]oad',
                  'p': 'S[P]eed',
                  'g': '[G]eometry',
-                 'c': '[C]haracters',
+                 'd': '[D]isplay',
                  'r': '[R]ules',
                  'b': '[B]ack'}
         self.more_menu()
@@ -264,27 +292,74 @@ You can import interesting premade shapes, and if you so choose, you can save an
             self.geometry()
         elif choice == 'p':
             self.set_speed(parameter)
-        elif choice == 'c':
+        elif choice == 'd':
             self.change_character()
         elif choice == 'r':
             self.change_rules()
 
+    def change_display(self):
+        print('[L]iving | [D]ead | [A]ge')
+        choice = 'x'
+        choiceInputs = ['l', 'd', 'a']
+        while choice not in choiceInputs:
+            choice = input().lower()
+        if choice == 'l':
+            self.change_living()
+        elif choice == 'd':
+            self.change_dead()
+        elif choice == 'a':
+            self.change_age()
+
+    def change_living(self):
+        alive = input('What do you want the living character to be? ')
+        for row in self.world.cells:
+            for cell in row:
+                cell.livingChar = alive
+
+    def change_dead(self):
+        dead = input('What do you want the dead character to be? ')
+        for row in self.world.cells:
+            for cell in row:
+                cell.deadChar = dead
+
+    def change_age(self):
+        choice = get_yes_no("Would you like to switch the display? (aged or normal) ")
+        if choice == 'yes':
+    #
+    # TODO left off here
+    #
+
     def change_rules(self):
         choice = get_yes_no('Do you want to see the current rules? ')
+        aliveNeighbors = []
+        deadNeighbors = []
         if choice == 'yes':
             pass
             #
             # TODO create a rules help menu .txt and print it
             #
-
-
-    def change_character(self):
-        alive = input('What do you want the living character to be? ')
-        dead = input('What do you want the dead character to be? ')
-        for row in self.world.cells:
-            for cell in row:
-                cell.deadChar = dead
-                cell.livingChar = alive
+        print('Please enter numbers 0-7 for how many living neighbors an alive cells needs to stay alive'
+              '\n[When done, type: done')
+        number = 'x'
+        while number != 'done':
+            number = input()
+            try:
+                numb = int(number)
+                aliveNeighbors.append(numb)
+            except:
+                pass
+        print('Please enter numbers 0-7 for how many living neighbors an dead cells needs to come alive'
+              '\n[When done, type: done')
+        number = 'x'
+        while number != 'done':
+            number = input()
+            try:
+                numb = int(number)
+                deadNeighbors.append(numb)
+            except:
+                pass
+        self.world.aliveToAlive = aliveNeighbors
+        self.world.deadToAlive = deadNeighbors
 
     def set_speed(self, parameter):
         if parameter != None:
@@ -352,12 +427,10 @@ def speed_test():
     sim.populate_world(50)
     print(sim.world)
 
-#main()
-speed_test()
+main()
+#speed_test()
 #
-# TODO get help on 1.7 (confirmation)
-#
-# TODO how do I convert a string of a unicode character to actual unicode (in change_character())
+# When running speed_test, paste this in terminal, python3 -m cProfile simulation.py
 #
 # TODO update help page(s)
 #

@@ -1,5 +1,6 @@
 from cells import Cell
 from random import *
+import random
 
 
 class World(list):
@@ -16,6 +17,7 @@ class World(list):
         self.aliveToAlive = [2, 3]
         self.deadToAlive = [3]
         self.name = 'N/A'
+        self.state = 'alive'
 
     def __str__(self):
         s = f'Living cells: {self.count_living()}\n'
@@ -38,10 +40,11 @@ class World(list):
     def populate_cells(self, percentAlive):
         cellLocations = [(row, column) for row in range(self.rows) for column in range(self.columns)]
         availableCells = cellLocations
+        random.shuffle(availableCells)
         percent = (percentAlive / 100) * len(cellLocations)
         alive = 0
         while alive < percent:
-            location = availableCells[randint(0, (len(availableCells) - 1))]
+            location = availableCells[0]
             cell = self.cells[location[0]][location[1]]
             cell.live()
             availableCells.remove(location)
@@ -113,9 +116,15 @@ class World(list):
                 if cell.alive:
                     if neighbors in self.aliveToAlive:
                         cell.nextLife = True
+                        cell.timeAlive += 1
+                    else:
+                        cell.timeAlive = 0
                 else:
                     if neighbors in self.deadToAlive:
                         cell.nextLife = True
+                        cell.timeAlive += 1
+                    else:
+                        cell.timeAlive = 0
 
     def create_next_world(self):
         for row in self.cells:

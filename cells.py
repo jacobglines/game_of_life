@@ -7,7 +7,10 @@ class Cell:
         self.neighbors = []
         self.nextLife = False
         self.livingChar = u"\u2B1B"
+        self.longLivingChar = u"\u25C6"
         self.deadChar = u"\u2B1C"
+        self.display = 'normal'
+        self.timeAlive = 0
 
     def live(self):
         self.alive = True
@@ -25,4 +28,11 @@ class Cell:
         return living
 
     def __repr__(self):
-        return self.livingChar if self.alive else self.deadChar
+        if self.display == 'aged':
+            if self.timeAlive > 3:
+                living = self.longLivingChar
+            else:
+                living = self.livingChar
+        elif self.display == 'normal':
+            living = self.livingChar
+        return living if self.alive else self.deadChar
