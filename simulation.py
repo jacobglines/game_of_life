@@ -12,16 +12,19 @@ class Simulation(object):
         self.speed = 0.25
 
     def add_world(self, x, y):
+        """Adds a world to the simulation"""
         self.world = World(x, y)
         self.size.append(x)
         self.size.append(y)
 
     def clear_world(self, name = False):
+        """Clears the simualtions world"""
         self.world = None
         self.name = name
         self.size = []
 
     def intro(self):
+        """Intro to the program"""
         print("""
  ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ███████╗    ██╗     ██╗███████╗███████╗
 ██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔═══██╗██╔════╝    ██║     ██║██╔════╝██╔════╝
@@ -30,17 +33,20 @@ class Simulation(object):
 ╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝██║         ███████╗██║██║     ███████╗
  ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝ ╚═╝         ╚══════╝╚═╝╚═╝     ╚══════╝
 """)
-        time.sleep(2)
+        time.sleep(1.5)
 
     def menu(self):
+        """Prints the main menu"""
         menu = """[C]reate | [S]im | S[K]ip | [P]opulate | C[R]eations | [M]ore | [H]elp | [Q]uit"""
         print(menu)
 
     def more_menu(self):
+        """Prints the secondary menu"""
         menu = '[S]ave | [L]oad | S[P]eed | [G]eometry | [D]isplay | [R]ules | [B]ack'
         print(menu)
 
     def play(self):
+        """Takes an input to play the program"""
         parameter = None
         plays = {'c': '[C]reate',
                's': '[S]im',
@@ -55,6 +61,10 @@ class Simulation(object):
         choice = 'x'
         while choice not in menuChoices:
             choice = input()
+            #
+            # Parameters skip the next step of their choice
+            # Parameters expect the input to always be correct
+            #
             if len(choice) > 1:
                 parameter = choice[1:].strip()
             choice = choice[0].lower()
@@ -62,6 +72,7 @@ class Simulation(object):
         return choice, parameter
 
     def create_world(self, parameter):
+        """Creates a new world"""
         if parameter != None:
             sizes = parameter.split(' ')
             rows = sizes[0]
@@ -79,6 +90,7 @@ class Simulation(object):
         print('')
 
     def sim(self, parameter):
+        """Simulates throught generations of the current world"""
         if self.world == None:
             print("You haven't made a world yet\n")
         elif self.world.count_living() == 0:
@@ -106,30 +118,8 @@ class Simulation(object):
             elif self.world.state == 'blinker':
                 print('All you have left is blinkers')
 
-    def sim_forward(self, parameter):
-        if parameter != None:
-            generations = parameter
-        else:
-            generations = get_integer("How many generations do you want to move forward? ")
-        counter = 0
-        self.world.state = 'alive'
-        while int(generations) > counter and self.world.count_living() > 0:
-            self.world.next_cell_status()
-            self.world.create_next_world()
-            counter += 1
-            #
-            # Remove the time sleep when running speed test
-            #
-            time.sleep(self.speed)
-            print(self.world)
-        if self.world.count_living() == 0:
-            print('Your cells all died at generation ', self.world.generation)
-        elif self.world.state == 'stale':
-            print('Your world will not change in its current state\n')
-        elif self.world.state == 'blinker':
-            print('All you have left is blinkers')
-
     def skip(self, parameter):
+        """Skips a number of generations of the current world"""
         if self.world == None:
             print("You haven't made a world yet")
         elif self.world.count_living() == 0:
@@ -148,6 +138,7 @@ class Simulation(object):
                 print('Your cells all died at generation ', self.world.generation)
 
     def populate_world(self, parameter):
+        """Populates the world based on the users input"""
         if self.world == None:
             print("You haven't made a world yet")
         else:
@@ -161,6 +152,7 @@ class Simulation(object):
             self.world.populate_cells(int(percent))
 
     def load_pattern(self):
+        """Menu to load pre-made worlds"""
         print('[L]etter L | [G]lider | [S]paceship | [P]entadecatalon | P[U]lsar\n')
         choices = ['l', 'g', 's', 'p', 'u']
         choice = 'x'
@@ -179,6 +171,7 @@ class Simulation(object):
         self.load(pattern)
 
     def save_world(self, parameter):
+        """Saves the current generation of the world"""
         if parameter != None:
             worldFileName = parameter
             if worldFileName[-5:] == '.life':
@@ -186,6 +179,9 @@ class Simulation(object):
             else:
                 worldFileName += '.life'
         else:
+            #
+            # There is always a world_one.life so this should trigger the next while statement
+            #
             worldFileName = 'world_one.life'
         fileNames = os.listdir(path='/Users/jacobglines/Desktop/Programming/gameOfLife')
         while worldFileName in fileNames:
@@ -198,6 +194,9 @@ class Simulation(object):
             fileline = ''
             for line in self.world.cells:
                 for cell in line:
+                    #
+                    # A way to write the world so that when reading, it's easy to make a cell alive or dead
+                    #
                     if cell.alive == True:
                         byte = '1'
                     else:
@@ -207,6 +206,7 @@ class Simulation(object):
             newWorld.write(fileline)
 
     def load(self, worldFileName):
+        """Loads previously saved worlds"""
         #
         # To add more creations, comment out the requirements for it to be a .life file
         #
@@ -223,21 +223,49 @@ class Simulation(object):
             self.world.count_neighbors_donut()
 
     def help_screen(self):
+        """Prints help screen"""
         print("""
-This game of life program is deigned based on the idea of the life of cells. If a dead cell has 3 alive neighbors,
-it too becomes alive. If an alive cell has 2 or 3 alive cells next to it, it will stay alive. But if an live cell
-has 0-1 or 4-8 alive neighbors, it dies from either overpopulation or not enough. In this program you are able to
-create a new world, adjusting rows, columns, and the population. You can also move forward generations.
-You can import interesting premade shapes, and if you so choose, you can save and load in different worlds.
+This is the game of life. Each character represents a cell. You create a world
+and the program will show you the generation. Cycling through generations will
+kill come cells and have some come to life. Here are the rules:
+        
+        Living Cells                    Dead Cells
+        
+        0-1 living neighbors: Dead      0-2 living neighbors = Dead
+        2-3 living neighbors: Alive     3 living neighbors = Alive
+        4-8 living neighbors: Dead      4-8 living neighbors = Dead
+        
+Command Menu
+To use the command menu, type in the letter in the brackets and press enter.
+
+c : Creates a new world
+s : Simulates the world and moves through generations
+k : Skip through generations without displaying them
+p : Populate your world with living cells
+r : Pre-made worlds that come with cool designs
+m : Displays a menu full of more commands
+    s : Save your world
+    l : Load an already saved world
+    p : Change the speed of the simulation
+    g : Change the geometry of the world to either dish or torus
+    d : Change the displays of the world
+        l : Change the living cells appearance
+        d : Change the dead cells appearance
+        a : Change from normal display or aged display
+    b : Goes back to the main menu
+q : Quits the program
+
 """)
 
     def show_worlds(self):
+        """Prints the names of files already saved"""
         worlds = os.listdir(path='/Users/jacobglines/Desktop/Programming/gameOfLife')
         for file in worlds:
             if file[-5:] == '.life':
                 print(file)
 
     def geometry(self):
+        """Changes the geometry of the world"""
         choice = 'x'
         while choice not in ['dish', 'donut']:
             choice = input('Dish or Donut? ').lower()
@@ -248,12 +276,14 @@ You can import interesting premade shapes, and if you so choose, you can save an
             self.world.count_neighbors_donut()
 
     def status_bar(self):
+        """Status bar of the world generation"""
         s = f'Size: {self.world.rows}x{self.world.columns} | Gen: {self.world.generation} | ' \
             f'Name: {self.world.name} | Alive: {self.get_percent():0.0f}% | ' \
             f'Geometry: {self.world.geometry} | Speed: {self.speed}\n'
         print(s)
 
     def play_menu(self):
+        """Secondary play menu that gets inputs to run the program"""
         parameter = None
         plays = {'s': '[S]ave',
                  'l': '[L]oad',
@@ -276,6 +306,7 @@ You can import interesting premade shapes, and if you so choose, you can save an
         return choice, parameter
 
     def more_menu_play(self):
+        """Secondary commands loop"""
         print(self.world)
         self.status_bar()
         choice, parameter = self.play_menu()
@@ -298,6 +329,7 @@ You can import interesting premade shapes, and if you so choose, you can save an
             self.change_rules()
 
     def change_display(self):
+        """Changes the displays cell appearances"""
         print('[L]iving | [D]ead | [A]ge')
         choice = 'x'
         choiceInputs = ['l', 'd', 'a']
@@ -311,18 +343,21 @@ You can import interesting premade shapes, and if you so choose, you can save an
             self.change_age()
 
     def change_living(self):
+        """Changes the living cells appearance"""
         alive = input('What do you want the living character to be? ')
         for row in self.world.cells:
             for cell in row:
                 cell.livingChar = alive
 
     def change_dead(self):
+        """Changes the dead cells appearance"""
         dead = input('What do you want the dead character to be? ')
         for row in self.world.cells:
             for cell in row:
                 cell.deadChar = dead
 
     def change_age(self):
+        """Changes the way the cells look based on age of the cells"""
         choice = get_yes_no("Would you like to switch the display?")
         if choice == 'yes':
             if self.world.cells[0][0].display == 'normal':
@@ -335,26 +370,25 @@ You can import interesting premade shapes, and if you so choose, you can save an
                         cell.display = 'normal'
 
     def change_rules(self):
-        choice = get_yes_no('Do you want to see the current rules? ')
+        """Changes the rules for alive and dead cells"""
         aliveNeighbors = []
         deadNeighbors = []
-        if choice == 'yes':
-            pass
-            #
-            # TODO create a rules help menu .txt and print it
-            #
         print('Please enter numbers 0-7 for how many living neighbors an alive cells needs to stay alive'
-              '\n[When done, type: done')
+              '\n[When done, type: done]')
         number = 'x'
         while number != 'done':
             number = input()
+            #
+            # If entered number is an integer, it will append it
+            # otherwise it just passes and does nothing
+            #
             try:
                 numb = int(number)
                 aliveNeighbors.append(numb)
             except:
                 pass
         print('Please enter numbers 0-7 for how many living neighbors an dead cells needs to come alive'
-              '\n[When done, type: done')
+              '\n[When done, type: done]')
         number = 'x'
         while number != 'done':
             number = input()
@@ -367,6 +401,7 @@ You can import interesting premade shapes, and if you so choose, you can save an
         self.world.deadToAlive = deadNeighbors
 
     def set_speed(self, parameter):
+        """Changes the speed of simulation"""
         if parameter != None:
             self.speed = int(parameter)
         else:
@@ -377,6 +412,7 @@ You can import interesting premade shapes, and if you so choose, you can save an
             self.speed = float(speed)
 
     def get_percent(self):
+        """Gets percent of alive cells for the generation"""
         cellLocations = [(row, column) for row in range(self.world.rows) for column in range(self.world.columns)]
         living = 0
         for row in self.world.cells:
@@ -424,6 +460,7 @@ def main():
             play = False
 
 def speed_test():
+    """Tests the speed of the program"""
     sim = Simulation()
     sim.create_world('200 900')
     print('hello')
@@ -436,6 +473,4 @@ main()
 #speed_test()
 #
 # When running speed_test, paste this in terminal, python3 -m cProfile simulation.py
-#
-# TODO update help page(s)
 #

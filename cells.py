@@ -13,14 +13,17 @@ class Cell:
         self.timeAlive = 0
 
     def live(self):
+        """Makes the cell alive"""
         self.alive = True
         return self
 
     def die(self):
+        """Makes the cell die"""
         self.alive = False
         return self
 
     def get_living_neighbors(self):
+        """Counts the number of alive neighbors for this cell"""
         living = 0
         for cell in self.neighbors:
             if cell.alive == True:
@@ -28,6 +31,9 @@ class Cell:
         return living
 
     def __repr__(self):
+        #
+        # Sees if the worlds display is normal or aged and then picks the repr of the cell
+        #
         if self.display == 'aged':
             if self.timeAlive > 3:
                 living = self.longLivingChar
