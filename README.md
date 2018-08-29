@@ -1,2 +1,2 @@
 # game_of_life
-John con ways game of life
+John Conways game of life
